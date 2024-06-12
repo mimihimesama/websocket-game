@@ -27,7 +27,7 @@ export const moveStageHandler = (userId, payload) => {
   // 점수 검증
   const requiredScore = nextStage.score;
   // 오차범위 5점
-  if (payload.score < requiredScore - 5 || payload.score > requiredScore + 95) {
+  if (payload.score < requiredScore - 5 || payload.score > requiredScore + 5) {
     return { status: 'fail', message: 'Invalid score' };
   }
 
