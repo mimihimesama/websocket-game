@@ -3,7 +3,9 @@ import { clearStage, getStage, setStage } from '../models/stage.model.js';
 
 export const gameStart = (uuid, payload) => {
   const { stages } = getGameAssets();
+
   clearStage(uuid);
+
   setStage(uuid, stages.data[0].id, payload.timestamp);
   console.log('Stage:', getStage(uuid));
 
@@ -11,6 +13,8 @@ export const gameStart = (uuid, payload) => {
 };
 
 export const gameEnd = (uuid, payload) => {
+  const { stages: stageJson } = getGameAssets();
+
   // 클라이언트에서 받은 게임 종료 시 타임스탬프와 총 점수
   const { timestamp: gameEndTime, score } = payload;
   const stages = getStage(uuid);
@@ -21,6 +25,7 @@ export const gameEnd = (uuid, payload) => {
 
   // 각 스테이지의 지속 시간을 계산하여 총 점수 계산
   let totalScore = 0;
+
   stages.forEach((stage, index) => {
     let stageEndTime;
     if (index === stages.length - 1) {
@@ -30,9 +35,11 @@ export const gameEnd = (uuid, payload) => {
       // 다음 스테이지의 시작 시간을 현재 스테이지의 종료 시간으로 사용
       stageEndTime = stages[index + 1].timestamp;
     }
-    const stageDuration = (stageEndTime - stage.timestamp) / 1000; // 스테이지 지속 시간 (초 단위)
-    totalScore += stageDuration; // 1초당 1점
+    const stageDuration = ((stageEndTime - stage.timestamp) / 1000) * stageJson.data[index].upScore; // 스테이지 별 초당 점수
+    totalScore += stageDuration;
   });
+
+  console.log('총점 : ', totalScore);
 
   // 점수와 타임스탬프 검증 (예: 클라이언트가 보낸 총점과 계산된 총점 비교)
   // 오차범위 5
