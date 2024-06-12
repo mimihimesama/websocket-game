@@ -218,6 +218,15 @@ function gameLoop(currentTime) {
   if (!gameover && cactiController.collideWith(player)) {
     gameover = true;
     score.setHighScore();
+
+    // 게임 종료 이벤트를 서버로 전송
+    const finalScore = score.getScore();
+    const payload = {
+      timestamp: Date.now(),
+      score: finalScore,
+    };
+    sendEvent(3, payload);
+
     setupGameReset();
   }
   const collideWithItem = itemController.collideWith(player);

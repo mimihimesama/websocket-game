@@ -14,7 +14,18 @@ class Score {
   }
 
   update(deltaTime) {
-    this.score += deltaTime * 0.01;
+    // 현재 점수에 해당하는 증가 속도 결정
+    let scoreIncrement = 1;
+    for (let i = this.stages.length - 1; i >= 0; i--) {
+      if (this.score >= this.stages[i].score) {
+        scoreIncrement = this.stages[i].upScore;
+        break;
+      }
+    }
+
+    // 점수 업데이트
+    this.score += deltaTime * 0.001 * scoreIncrement;
+
     const currentStageIndex = this.stages.findIndex((stage) => stage.id === this.currentStage);
     const nextStage = this.stages[currentStageIndex + 1];
 
@@ -23,6 +34,9 @@ class Score {
       this.stageChange = false;
       sendEvent(11, { currentStage: this.currentStage, targetStage: nextStage.id });
       this.currentStage = nextStage.id; // 현재 스테이지 업데이트
+      setTimeout(() => {
+        this.stageChange = true;
+      }, 1000); // 1초 후에 다시 스테이지 변경 가능하도록 설정
     }
   }
 
