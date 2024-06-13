@@ -6,11 +6,12 @@ class Score {
   currentStage = 1000; // 초기 스테이지 설정
   stageChange = true;
 
-  constructor(ctx, scaleRatio, stages) {
+  constructor(ctx, scaleRatio, stages, itemData) {
     this.ctx = ctx;
     this.canvas = ctx.canvas;
     this.scaleRatio = scaleRatio;
     this.stages = stages;
+    this.itemData = itemData;
   }
 
   update(deltaTime) {
@@ -40,8 +41,15 @@ class Score {
     }
   }
 
+  getCurrentStage() {
+    return this.currentStage;
+  }
+
   getItem(itemId) {
-    this.score += 0;
+    const itemIndex = this.itemData.findIndex((item) => item.id === itemId);
+    const itemScore = this.itemData[itemIndex].score;
+    this.score += itemScore;
+    sendEvent(14, { itemId, itemScore });
   }
 
   reset() {
