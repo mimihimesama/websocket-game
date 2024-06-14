@@ -4,7 +4,7 @@ import CactiController from './CactiController.js';
 import Score from './Score.js';
 import ItemController from './ItemController.js';
 import './Socket.js';
-import { sendEvent } from './Socket.js';
+import { sendEvent, setScoreInstance } from './Socket.js';
 import stages from './assets/stage.json' with { type: 'json' };
 import itemData from './assets/item.json' with { type: 'json' };
 import itemUnlocks from './assets/item_unlock.json' with { type: 'json' };
@@ -109,6 +109,8 @@ function createSprites() {
   });
 
   score = new Score(ctx, scaleRatio, stages.data, itemData.data);
+
+  setScoreInstance(score);
 
   itemController = new ItemController(
     ctx,
@@ -226,13 +228,10 @@ function gameLoop(currentTime) {
 
   if (!gameover && cactiController.collideWith(player)) {
     gameover = true;
-    score.setHighScore();
-
     // 게임 종료 이벤트를 서버로 전송
-    const finalScore = score.getScore();
     const payload = {
       timestamp: Date.now(),
-      score: finalScore,
+      score: score.score,
     };
     sendEvent(3, payload);
 

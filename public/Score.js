@@ -6,6 +6,7 @@ class Score {
   currentStage = 1000; // 초기 스테이지 설정
   stageChange = true;
   accScore = 0;
+  highScore = 0;
 
   constructor(ctx, scaleRatio, stages, itemData) {
     this.ctx = ctx;
@@ -64,19 +65,11 @@ class Score {
     this.stageChange = true; // 스테이지 변경 가능하도록 초기화
   }
 
-  setHighScore() {
-    const highScore = Number(localStorage.getItem(this.HIGH_SCORE_KEY));
-    if (this.score > highScore) {
-      localStorage.setItem(this.HIGH_SCORE_KEY, Math.floor(this.score));
-    }
-  }
-
-  getScore() {
-    return this.score;
+  setHighScore(score) {
+    this.highScore = score;
   }
 
   draw() {
-    const highScore = Number(localStorage.getItem(this.HIGH_SCORE_KEY));
     const y = 20 * this.scaleRatio;
 
     const fontSize = 20 * this.scaleRatio;
@@ -87,7 +80,7 @@ class Score {
     const highScoreX = scoreX - 125 * this.scaleRatio;
 
     const scorePadded = Math.floor(this.score).toString().padStart(6, 0);
-    const highScorePadded = highScore.toString().padStart(6, 0);
+    const highScorePadded = this.highScore.toString().padStart(6, 0);
 
     this.ctx.fillText(scorePadded, scoreX, y);
     this.ctx.fillText(`HI ${highScorePadded}`, highScoreX, y);

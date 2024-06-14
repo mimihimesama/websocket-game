@@ -2,6 +2,7 @@ import { getGameAssets } from '../init/assets.js';
 import { clearStage, getStage, setStage } from '../models/stage.model.js';
 import { createItem, getItem } from '../models/item.model.js';
 import calculateTotalScore from '../utils/calculateTotalScore.js';
+import { addHighScore, getHighScores } from '../models/score.model.js';
 
 export const gameStart = (uuid, payload) => {
   const { stages } = getGameAssets();
@@ -10,12 +11,11 @@ export const gameStart = (uuid, payload) => {
   createItem(uuid);
 
   setStage(uuid, stages.data[0].id, payload.timestamp);
-  console.log('Stage:', getStage(uuid));
 
   return { status: 'success' };
 };
 
-export const gameEnd = (uuid, payload) => {
+export const gameEnd = async (uuid, payload, io) => {
   // 클라이언트에서 받은 게임 종료 시 타임스탬프와 총 점수
   const { timestamp: gameEndTime, score } = payload;
   const stages = getStage(uuid);
@@ -25,7 +25,7 @@ export const gameEnd = (uuid, payload) => {
     return { status: 'fail', message: 'No stages found for user' };
   }
 
-  // 각 스테이지의 지속 시간을 계산하여 총 점수 계산
+  // 총 점수 계산
   const totalScore = calculateTotalScore(stages, gameEndTime, items);
 
   console.log('총점 : ', totalScore);
@@ -36,8 +36,16 @@ export const gameEnd = (uuid, payload) => {
     return { status: 'fail', message: 'Score verification failed' };
   }
 
-  // 모든 검증이 통과된 후, 클라이언트에서 제공한 점수 저장하는 로직
-  // saveGameResult(userId, clientScore, gameEndTime);
-  // 검증이 통과되면 게임 종료 처리
+  // 현재 최고 점수를 가져와서 비교
+  const highScores = await getHighScores(1);
+  const currentHighScore = highScores.length > 0 ? highScores[0].score : 0;
+
+  if (score > currentHighScore) {
+    // 새로운 최고 점수인 경우
+    await addHighScore(uuid, score);
+
+    io.emit('newHighScore', { uuid, score });
+  }
+
   return { status: 'success', message: 'Game ended successfully', score };
 };

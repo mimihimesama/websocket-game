@@ -7,14 +7,14 @@ class ItemController {
   nextInterval = null;
   items = [];
 
-  constructor(ctx, itemImages, scaleRatio, speed, itemUnlocks, scoreInstance) {
+  constructor(ctx, itemImages, scaleRatio, speed, itemUnlocks, currentScore) {
     this.ctx = ctx;
     this.canvas = ctx.canvas;
     this.itemImages = itemImages;
     this.scaleRatio = scaleRatio;
     this.speed = speed;
     this.itemUnlocks = itemUnlocks;
-    this.scoreInstance = scoreInstance; // Score 인스턴스를 저장
+    this.currentScore = currentScore; // Score 인스턴스를 저장
 
     this.setNextItemTime();
   }
@@ -28,7 +28,7 @@ class ItemController {
   }
 
   createItem() {
-    this.currentStage = this.scoreInstance.getCurrentStage(); // 초기 스테이지를 Score 인스턴스로부터 가져옴
+    this.currentStage = this.currentScore.getCurrentStage(); // 초기 스테이지를 Score 인스턴스로부터 가져옴
     const itemUnlockIndex = this.itemUnlocks.findIndex(
       (data) => data.stage_id === this.currentStage,
     );
