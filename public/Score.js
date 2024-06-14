@@ -5,6 +5,7 @@ class Score {
   HIGH_SCORE_KEY = 'highScore';
   currentStage = 1000; // 초기 스테이지 설정
   stageChange = true;
+  accScore = 0;
 
   constructor(ctx, scaleRatio, stages, itemData) {
     this.ctx = ctx;
@@ -25,7 +26,12 @@ class Score {
     }
 
     // 점수 업데이트
-    this.score += deltaTime * 0.001 * scoreIncrement;
+    this.accScore += deltaTime * 0.001 * scoreIncrement;
+
+    if (this.accScore >= scoreIncrement) {
+      this.score += scoreIncrement;
+      this.accScore -= scoreIncrement;
+    }
 
     const currentStageIndex = this.stages.findIndex((stage) => stage.id === this.currentStage);
     const nextStage = this.stages[currentStageIndex + 1];
