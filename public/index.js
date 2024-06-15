@@ -178,6 +178,7 @@ function reset() {
   ground.reset();
   cactiController.reset();
   score.reset();
+  itemController.reset();
   gameSpeed = GAME_SPEED_START;
   // 게임시작 핸들러ID 2, payload 에는 게임 시작 시간
   sendEvent(2, { timestamp: Date.now() });
