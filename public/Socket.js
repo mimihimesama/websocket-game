@@ -1,6 +1,6 @@
 import { CLIENT_VERSION } from './Constants.js';
 
-let userId = '';
+let userId = localStorage.getItem('uuid');
 let scoreInstance = null; // Score 인스턴스를 저장할 변수
 
 const socket = io('http://localhost:3000', {
@@ -23,7 +23,10 @@ socket.on('newHighScore', (data) => {
 
 socket.on('connection', (data) => {
   console.log('connection: ', data);
-  userId = data.uuid;
+  if (!userId) {
+    localStorage.setItem('uuid', data.uuid);
+    userId = data.uuid;
+  }
   if (scoreInstance && data.highScore) {
     scoreInstance.setHighScore(data.highScore.score);
   }
